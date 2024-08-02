@@ -4,7 +4,8 @@ from datetime import datetime
 def render(room):
     return Li(A(room.name, href=f"/rooms/{room.id}"))
 
-app,rt,rooms,Room = fast_app('data/drawapp.db', render=render, id=int, name=str, created_at=str, canvas_data=str, pk='id')
+app,rt,rooms,Room = fast_app('data/drawapp.db', live=True, render=render, id=int, name=str, created_at=str, canvas_data=str, pk='id')
+setup_toasts(app)
 
 @rt("/")
 def get():
@@ -60,9 +61,9 @@ async def get(id:int):
                   Script(js))
 
 @rt("/rooms/{id}/save")
-async def post(id:int, canvas_data:str):
+async def post(id:int, canvas_data:str, session):
     rooms.update({'canvas_data': canvas_data}, id)
-    return "Canvas saved successfully"
+    add_toast(session, "Canvas saved successfully", "success")
 
 @rt("/rooms/{id}/load")
 async def get(id:int):
